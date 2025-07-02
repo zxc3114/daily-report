@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>門市日報表產生器（全自動佔比計算）</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f7f7f7;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+  }
+  pre {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<h2>門市日報表產生器（全自動佔比計算）</h2>
+<form id="reportForm">
+  <label>店名：<input name="store_name" required></label>
+  <label>日期：<input name="date"></label>
+  <label>天氣：<input name="weather"></label>
+  <label>今日營業額：<input name="today_sales" type="number" required></label>
+  <label>今日來客數：<input name="today_customers"></label>
+  <label>今日客單價：<input name="today_average"></label>
+  <label>最高營業額時段：<input name="peak_time"></label>
+  <label>最高營業額：<input name="peak_sales"></label>
+  <label>值班經理：<input name="manager"></label>
+  <label>請假/遲到人員：<input name="leave_late"></label>
+  <label>人力/總工時：<input name="labor_hours"></label>
+  <label>生產力：<input name="productivity"></label>
+  <label>計時時數：<input name="hourly_hours"></label>
+  <label>生產力說明：<input name="productivity_note"></label>
+  <h3>各通路訂單資料</h3>
+  <label>Ue 單量：<input name="ue_qty" type="number"></label>
+  <label>Ue 金額：<input name="ue_amount" type="number"></label>
+  <label>FP 單量：<input name="fp_qty" type="number"></label>
+  <label>FP 金額：<input name="fp_amount" type="number"></label>
+  <label>App 單量：<input name="app_qty" type="number"></label>
+  <label>App 金額：<input name="app_amount" type="number"></label>
+  <label>桌邊 單量：<input name="table_qty" type="number"></label>
+  <label>桌邊 金額：<input name="table_amount" type="number"></label>
+  <h3>飲料資料</h3>
+  <label>咖啡杯數：<input name="coffee_qty" type="number"></label>
+  <label>飲料總杯數：<input name="drink_qty" type="number"></label>
+  <label>三明治（銷/廢)：<input name="sandwich"></label>
+  <label>員工餐八折：<input name="staff_meal"></label>
+  <label>新品目標符號：<input name="new_product_goal" placeholder="🎯"></label>
+  <label>黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：<input name="item1"></label>
+  <label>蕈菇歐姆蛋吐司/焗烤厚片：<input name="item2"></label>
+  <label>蕈菇烤餅/嫩蛋捲：<input name="item3"></label>
+  <label>雲朵奶蓋紅茶/青茶/黑糖厚奶茶：<input name="item4"></label>
+  <label>鯊魚拿鐵：<input name="item5"></label>
+  <label>未存：<input name="end_inventory"></label>
+  <label>退單：<input name="returns"></label>
+  <button type="button" onclick="generateReport()">產生報表</button>
+</form>
+<h3>產生的報表：</h3>
+<pre id="output"></pre>
+<script>
+function calcPercent(amount, total) {
+  if (!amount || !total || total === 0) return "0%";
+  return ((amount / total) * 100).toFixed(1) + "%";
+}
+function generateReport() {
+  const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
+  const totalSales = parseFloat(f.today_sales) || 0;
+  const uePercent = calcPercent(f.ue_amount, totalSales);
+  const fpPercent = calcPercent(f.fp_amount, totalSales);
+  const appPercent = calcPercent(f.app_amount, totalSales);
+  const tablePercent = calcPercent(f.table_amount, totalSales);
+  const coffeeQty = parseInt(f.coffee_qty) || 0;
+  const drinkQty = parseInt(f.drink_qty) || 0;
+  const coffeePercent = calcPercent(coffeeQty, drinkQty);
+  const report = `店名：${f.store_name}
+日期：${f.date}
+天氣：${f.weather}
+
+今日營業額：${f.today_sales}
+今日來客數：${f.today_customers}
+今日客單價：${f.today_average}
+最高營業額時段/營業額：${f.peak_time}/${f.peak_sales}
+
+值班經理：${f.manager}
+請假/遲到人員：${f.leave_late}
+人力/總工時：${f.labor_hours}
+生產力：${f.productivity}
+計時時數：${f.hourly_hours}
+生產力說明：
+${f.productivity_note}
+
+Ue單量/金額/佔比：${f.ue_qty}/${f.ue_amount}/${uePercent}
+FP 單量/金額/佔比：${f.fp_qty}/${f.fp_amount}/${fpPercent}
+App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
+桌邊單量/金額/佔比：${f.table_qty}/${f.table_amount}/${tablePercent}
+
+咖啡杯數/總杯數/佔比：${coffeeQty}/${drinkQty}/${coffeePercent}
+飲料總杯數：${drinkQty}
+三明治（銷/廢)：${f.sandwich}
+員工餐八折：${f.staff_meal}
+
+新品戰報（目標：${f.new_product_goal})
+黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：${f.item1}
+蕈菇歐姆蛋吐司/焗烤厚片：${f.item2}
+蕈菇烤餅/嫩蛋捲：${f.item3}
+雲朵奶蓋紅茶/青茶/黑糖厚奶茶：${f.item4}
+鯊魚拿鐵：${f.item5}
+
+未存：${f.end_inventory}
+退單：${f.returns}`;
+  document.getElementById('output').textContent = report;
+}
+</script>
+</body>
+</html>
