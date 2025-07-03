@@ -90,6 +90,9 @@
   <label>最高營業額：<input name="peak_sales"></label>
   <label>值班經理：<input name="manager"></label>
   <label>請假/遲到人員：<input name="leave_late"></label>
+  <label>人力：<input name="labor_people"></label>
+<label>總工時：<input name="labor_hours" type="number" required></label>
+
   <label>總工時：<input name="labor_hours" type="number" required></label>
   <label>計時時數：<input name="hourly_hours"></label>
   <label>生產力說明：<input name="productivity_note"></label>
@@ -179,7 +182,7 @@ function generateReport() {
 
 值班經理：${f.manager}
 請假/遲到人員：${f.leave_late}
-人力/總工時：${laborHours}
+人力/總工時：${f.labor_people}/${laborHours}
 生產力：${productivity}
 計時時數：${f.hourly_hours}
 生產力說明：
