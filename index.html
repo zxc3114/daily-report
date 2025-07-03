@@ -2,50 +2,54 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>門市日報表 & 算錢工具</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #e9f0f4;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
   }
   h2 {
     background: #4a90e2;
     color: #fff;
-    padding: 10px 15px;
+    padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    margin-top: 40px;
+    margin-top: 30px;
   }
   form {
     background: #fff;
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 700px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
   }
   label {
     display: block;
-    margin-top: 15px;
+    margin-top: 12px;
     font-weight: bold;
   }
   input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
   }
   button {
-    margin-top: 20px;
-    padding: 12px 24px;
+    width: 100%;
+    padding: 14px;
     background: #4a90e2;
     color: #fff;
     border: none;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
+    margin-top: 20px;
     transition: background 0.3s ease;
   }
   button:hover {
@@ -57,8 +61,19 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     white-space: pre-wrap;
-    margin-top: 20px;
+    margin-top: 15px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  @media (max-width: 600px) {
+    body {
+      padding: 5px;
+    }
+    input {
+      font-size: 18px;
+    }
+    button {
+      font-size: 20px;
+    }
   }
 </style>
 </head>
@@ -132,11 +147,12 @@
 <div class="result" id="moneyResult"></div>
 
 <script>
-// 工具共用
+// 共用計算
 function calcPercent(amount, total) {
   if (!amount || !total || total === 0) return "0%";
   return ((amount / total) * 100).toFixed(1) + "%";
 }
+
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
   const totalSales = parseFloat(f.today_sales) || 0;
@@ -190,6 +206,7 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 退單：${f.returns}`;
   document.getElementById('output').textContent = report;
 }
+
 function calculateMoney() {
   const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
   const total = 
@@ -224,3 +241,4 @@ function calculateMoney() {
 </script>
 </body>
 </html>
+
