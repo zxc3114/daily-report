@@ -107,7 +107,7 @@
 
   <h3>🥤 飲料資料</h3>
   <label>咖啡杯數：<input name="coffee_qty" type="number" required></label>
-  <label>其他飲料杯數：<input name="drink_qty" type="number" required></label>
+  <label>飲料杯數：<input name="drink_qty" type="number" required></label>
 
   <label>三明治（銷/廢)：<input name="sandwich"></label>
   <label>員工餐八折：<input name="staff_meal"></label>
@@ -205,8 +205,6 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 退單：${f.returns}`;
   document.getElementById('output').textContent = report;
 }
-</script>
-
 function calculateMoney() {
   const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
   const total = 
@@ -241,4 +239,5 @@ function calculateMoney() {
 </script>
 </body>
 </html>
+
 
