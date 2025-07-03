@@ -2,54 +2,84 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>門市日報表產生器（全自動佔比計算）</title>
+<title>門市日報表 & 算錢工具</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #e9f0f4;
+    margin: 0;
     padding: 20px;
-    background: #f7f7f7;
+  }
+  h2 {
+    background: #4a90e2;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    margin-top: 40px;
+  }
+  form {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
   }
   label {
     display: block;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-weight: bold;
   }
   input {
     width: 100%;
-    padding: 5px;
-    box-sizing: border-box;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
   }
   button {
     margin-top: 20px;
-    padding: 10px 20px;
+    padding: 12px 24px;
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
   }
-  pre {
+  button:hover {
+    background: #357ab8;
+  }
+  pre, .result {
     background: #fff;
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #ccc;
+    border-radius: 8px;
     white-space: pre-wrap;
+    margin-top: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 </style>
 </head>
 <body>
-<h2>門市日報表產生器（全自動佔比計算）</h2>
+
+<h2>📋 門市日報表產生器（自動計算）</h2>
 <form id="reportForm">
   <label>店名：<input name="store_name" required></label>
   <label>日期：<input name="date"></label>
   <label>天氣：<input name="weather"></label>
   <label>今日營業額：<input name="today_sales" type="number" required></label>
-  <label>今日來客數：<input name="today_customers"></label>
-  <label>今日客單價：<input name="today_average"></label>
+  <label>今日來客數：<input name="today_customers" type="number" required></label>
   <label>最高營業額時段：<input name="peak_time"></label>
   <label>最高營業額：<input name="peak_sales"></label>
   <label>值班經理：<input name="manager"></label>
   <label>請假/遲到人員：<input name="leave_late"></label>
-  <label>人力/總工時：<input name="labor_hours"></label>
-  <label>生產力：<input name="productivity"></label>
+  <label>總工時：<input name="labor_hours" type="number" required></label>
   <label>計時時數：<input name="hourly_hours"></label>
   <label>生產力說明：<input name="productivity_note"></label>
-  <h3>各通路訂單資料</h3>
+
+  <h3>📦 各通路訂單資料</h3>
   <label>Ue 單量：<input name="ue_qty" type="number"></label>
   <label>Ue 金額：<input name="ue_amount" type="number"></label>
   <label>FP 單量：<input name="fp_qty" type="number"></label>
@@ -58,24 +88,51 @@
   <label>App 金額：<input name="app_amount" type="number"></label>
   <label>桌邊 單量：<input name="table_qty" type="number"></label>
   <label>桌邊 金額：<input name="table_amount" type="number"></label>
-  <h3>飲料資料</h3>
-  <label>咖啡杯數：<input name="coffee_qty" type="number"></label>
-  <label>飲料總杯數：<input name="drink_qty" type="number"></label>
+
+  <h3>🥤 飲料資料</h3>
+  <label>咖啡杯數：<input name="coffee_qty" type="number" required></label>
+  <label>其他飲料杯數：<input name="drink_qty" type="number" required></label>
+
   <label>三明治（銷/廢)：<input name="sandwich"></label>
   <label>員工餐八折：<input name="staff_meal"></label>
+
   <label>新品目標符號：<input name="new_product_goal" placeholder="🎯"></label>
   <label>黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：<input name="item1"></label>
   <label>蕈菇歐姆蛋吐司/焗烤厚片：<input name="item2"></label>
   <label>蕈菇烤餅/嫩蛋捲：<input name="item3"></label>
   <label>雲朵奶蓋紅茶/青茶/黑糖厚奶茶：<input name="item4"></label>
   <label>鯊魚拿鐵：<input name="item5"></label>
+
   <label>未存：<input name="end_inventory"></label>
   <label>退單：<input name="returns"></label>
-  <button type="button" onclick="generateReport()">產生報表</button>
+
+  <button type="button" onclick="generateReport()">✨ 產生日報表</button>
 </form>
-<h3>產生的報表：</h3>
 <pre id="output"></pre>
+
+<h2>💰 門市算錢工具（含8000底金檢核）</h2>
+<form id="moneyForm">
+  <h3>🔢 各面額張數</h3>
+  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
+  <label>500元張數：<input type="number" name="m500" value="0"></label>
+  <label>100元張數：<input type="number" name="m100" value="0"></label>
+  <label>50元張數：<input type="number" name="m50" value="0"></label>
+  <label>10元枚數：<input type="number" name="m10" value="0"></label>
+  <label>5元枚數：<input type="number" name="m5" value="0"></label>
+  <label>1元枚數：<input type="number" name="m1" value="0"></label>
+
+  <h3>💵 今日已收現金</h3>
+  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
+
+  <h3>📝 支出金額</h3>
+  <label>支出合計：<input type="number" name="expense" value="0"></label>
+
+  <button type="button" onclick="calculateMoney()">💡 計算金額</button>
+</form>
+<div class="result" id="moneyResult"></div>
+
 <script>
+// 工具共用
 function calcPercent(amount, total) {
   if (!amount || !total || total === 0) return "0%";
   return ((amount / total) * 100).toFixed(1) + "%";
@@ -83,26 +140,31 @@ function calcPercent(amount, total) {
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
   const totalSales = parseFloat(f.today_sales) || 0;
+  const customers = parseInt(f.today_customers) || 0;
+  const laborHours = parseFloat(f.labor_hours) || 0;
+  const average = customers ? (totalSales / customers).toFixed(1) : "0";
+  const productivity = laborHours ? (totalSales / laborHours).toFixed(1) : "0";
   const uePercent = calcPercent(f.ue_amount, totalSales);
   const fpPercent = calcPercent(f.fp_amount, totalSales);
   const appPercent = calcPercent(f.app_amount, totalSales);
   const tablePercent = calcPercent(f.table_amount, totalSales);
   const coffeeQty = parseInt(f.coffee_qty) || 0;
   const drinkQty = parseInt(f.drink_qty) || 0;
-  const coffeePercent = calcPercent(coffeeQty, drinkQty);
+  const totalDrink = coffeeQty + drinkQty;
+  const coffeePercent = calcPercent(coffeeQty, totalDrink);
   const report = `店名：${f.store_name}
 日期：${f.date}
 天氣：${f.weather}
 
-今日營業額：${f.today_sales}
-今日來客數：${f.today_customers}
-今日客單價：${f.today_average}
+今日營業額：${totalSales}
+今日來客數：${customers}
+今日客單價：${average}
 最高營業額時段/營業額：${f.peak_time}/${f.peak_sales}
 
 值班經理：${f.manager}
 請假/遲到人員：${f.leave_late}
-人力/總工時：${f.labor_hours}
-生產力：${f.productivity}
+人力/總工時：${laborHours}
+生產力：${productivity}
 計時時數：${f.hourly_hours}
 生產力說明：
 ${f.productivity_note}
@@ -112,8 +174,8 @@ FP 單量/金額/佔比：${f.fp_qty}/${f.fp_amount}/${fpPercent}
 App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 桌邊單量/金額/佔比：${f.table_qty}/${f.table_amount}/${tablePercent}
 
-咖啡杯數/總杯數/佔比：${coffeeQty}/${drinkQty}/${coffeePercent}
-飲料總杯數：${drinkQty}
+咖啡杯數/總杯數/佔比：${coffeeQty}/${totalDrink}/${coffeePercent}
+飲料總杯數：${totalDrink}
 三明治（銷/廢)：${f.sandwich}
 員工餐八折：${f.staff_meal}
 
@@ -128,70 +190,8 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 退單：${f.returns}`;
   document.getElementById('output').textContent = report;
 }
-</script>
-</body>
-</html>
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8" />
-<title>門市算錢工具（含8000底金檢核）</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #f0f0f0;
-  }
-  label {
-    display: block;
-    margin-top: 10px;
-  }
-  input {
-    width: 100%;
-    padding: 5px;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-  }
-  .result {
-    background: #fff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-  }
-</style>
-</head>
-<body>
-<h2>門市算錢工具（含8000底金檢核）</h2>
-
-<form id="moneyForm">
-  <h3>各面額張數</h3>
-  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
-  <label>500元張數：<input type="number" name="m500" value="0"></label>
-  <label>100元張數：<input type="number" name="m100" value="0"></label>
-  <label>50元張數：<input type="number" name="m50" value="0"></label>
-  <label>10元枚數：<input type="number" name="m10" value="0"></label>
-  <label>5元枚數：<input type="number" name="m5" value="0"></label>
-  <label>1元枚數：<input type="number" name="m1" value="0"></label>
-
-  <h3>今日已收現金</h3>
-  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
-
-  <h3>支出金額</h3>
-  <label>支出合計：<input type="number" name="expense" value="0"></label>
-
-  <button type="button" onclick="calculate()">計算</button>
-</form>
-
-<div class="result" id="result"></div>
-
-<script>
-function calculate() {
+function calculateMoney() {
   const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
-
   const total = 
     (parseInt(f.m1000)||0)*1000 +
     (parseInt(f.m500)||0)*500 +
@@ -200,23 +200,18 @@ function calculate() {
     (parseInt(f.m10)||0)*10 +
     (parseInt(f.m5)||0)*5 +
     (parseInt(f.m1)||0)*1;
-
   const cashIn = parseInt(f.cash_in)||0;
   const expenses = parseInt(f.expense)||0;
-
   const final = total - cashIn - expenses;
-
   const required = 8000;
   const diff = final - required;
-
   let status = "";
   if (diff < 0) {
     status = `<span style="color:red;"><strong>❌ 短少：${Math.abs(diff)} 元</strong></span>`;
   } else {
     status = `<span style="color:green;"><strong>✅ 足夠，超出：${diff} 元</strong></span>`;
   }
-
-  document.getElementById('result').innerHTML = `
+  document.getElementById('moneyResult').innerHTML = `
     <strong>計算結果：</strong><br>
     現金合計：${total} 元<br>
     扣除現金收入：${cashIn} 元<br>
