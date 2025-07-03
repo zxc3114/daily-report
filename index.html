@@ -131,3 +131,94 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 </script>
 </body>
 </html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>門市算錢工具</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f0f0f0;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+  }
+  .result {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<h2>門市算錢工具</h2>
+
+<form id="moneyForm">
+  <h3>各面額張數</h3>
+  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
+  <label>500元張數：<input type="number" name="m500" value="0"></label>
+  <label>100元張數：<input type="number" name="m100" value="0"></label>
+  <label>50元張數：<input type="number" name="m50" value="0"></label>
+  <label>10元枚數：<input type="number" name="m10" value="0"></label>
+  <label>5元枚數：<input type="number" name="m5" value="0"></label>
+  <label>1元枚數：<input type="number" name="m1" value="0"></label>
+
+  <h3>今日已收現金</h3>
+  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
+
+  <h3>支出金額（若有）</h3>
+  <label>員工餐支出：<input type="number" name="expense1" value="0"></label>
+  <label>採購支出：<input type="number" name="expense2" value="0"></label>
+  <label>其他支出：<input type="number" name="expense3" value="0"></label>
+
+  <button type="button" onclick="calculate()">計算</button>
+</form>
+
+<div class="result" id="result"></div>
+
+<script>
+function calculate() {
+  const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
+
+  const total = 
+    (parseInt(f.m1000)||0)*1000 +
+    (parseInt(f.m500)||0)*500 +
+    (parseInt(f.m100)||0)*100 +
+    (parseInt(f.m50)||0)*50 +
+    (parseInt(f.m10)||0)*10 +
+    (parseInt(f.m5)||0)*5 +
+    (parseInt(f.m1)||0)*1;
+
+  const cashIn = parseInt(f.cash_in)||0;
+  const expenses = 
+    (parseInt(f.expense1)||0) +
+    (parseInt(f.expense2)||0) +
+    (parseInt(f.expense3)||0);
+
+  const final = total - cashIn - expenses;
+
+  document.getElementById('result').innerHTML = `
+    <strong>計算結果：</strong><br>
+    現金合計：${total} 元<br>
+    已收現金：${cashIn} 元<br>
+    支出合計：${expenses} 元<br>
+    <strong>最終應收/應繳金額：${final} 元</strong>
+  `;
+}
+</script>
+</body>
+</html>
