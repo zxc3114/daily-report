@@ -91,8 +91,6 @@
   <label>值班經理：<input name="manager"></label>
   <label>請假/遲到人員：<input name="leave_late"></label>
   <label>人力：<input name="labor_people"></label>
-<label>總工時：<input name="labor_hours" type="number" required></label>
-
   <label>總工時：<input name="labor_hours" type="number" required></label>
   <label>計時時數：<input name="hourly_hours"></label>
   <label>生產力說明：<input name="productivity_note"></label>
@@ -150,12 +148,10 @@
 <div class="result" id="moneyResult"></div>
 
 <script>
-// 共用計算
 function calcPercent(amount, total) {
   if (!amount || !total || total === 0) return "0%";
   return ((amount / total) * 100).toFixed(1) + "%";
 }
-
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
   const totalSales = parseFloat(f.today_sales) || 0;
@@ -209,7 +205,6 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 退單：${f.returns}`;
   document.getElementById('output').textContent = report;
 }
-
 function calculateMoney() {
   const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
   const total = 
