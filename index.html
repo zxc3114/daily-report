@@ -165,8 +165,8 @@ function generateReport() {
   const tablePercent = calcPercent(f.table_amount, totalSales);
   const coffeeQty = parseInt(f.coffee_qty) || 0;
   const drinkQty = parseInt(f.drink_qty) || 0;
-  const totalDrink = coffeeQty + drinkQty;
-  const coffeePercent = calcPercent(coffeeQty, totalDrink);
+  const totalDrinkForPercent = coffeeQty + drinkQty;
+  const coffeePercent = calcPercent(coffeeQty, totalDrinkForPercent);
   const report = `店名：${f.store_name}
 日期：${f.date}
 天氣：${f.weather}
@@ -189,8 +189,8 @@ FP 單量/金額/佔比：${f.fp_qty}/${f.fp_amount}/${fpPercent}
 App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 桌邊單量/金額/佔比：${f.table_qty}/${f.table_amount}/${tablePercent}
 
-咖啡杯數/總杯數/佔比：${coffeeQty}/${totalDrink}/${coffeePercent}
-飲料總杯數：${totalDrink}
+咖啡杯數/總杯數/佔比：${coffeeQty}/${totalDrinkForPercent}/${coffeePercent}
+飲料總杯數：${drinkQty}
 三明治（銷/廢)：${f.sandwich}
 員工餐八折：${f.staff_meal}
 
@@ -205,6 +205,8 @@ App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
 退單：${f.returns}`;
   document.getElementById('output').textContent = report;
 }
+</script>
+
 function calculateMoney() {
   const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
   const total = 
