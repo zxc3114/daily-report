@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>門市日報表（新版格式）</title>
+<title>門市日報表（APP佔比自動計算）</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -68,7 +68,7 @@
 </head>
 <body>
 
-<h2>📋 門市日報表（新版格式）</h2>
+<h2>📋 門市日報表（APP佔比自動計算）</h2>
 <form id="reportForm">
   <label>店名：<input name="store_name" required></label>
   <label>日期：<input name="date"></label>
@@ -95,7 +95,6 @@
   <label>Food Panda 金額：<input name="fp_amount"></label>
   <label>APP 訂餐 筆數：<input name="app_qty"></label>
   <label>APP 訂餐 金額：<input name="app_amount"></label>
-  <label>APP 訂餐佔比%：<input name="app_percent"></label>
 
   <button type="button" onclick="generateReport()">✨ 產生日報表</button>
 </form>
@@ -106,8 +105,11 @@
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
 
-  const laborHours = parseFloat(f.labor_hours) || 0;
   const totalSales = parseFloat(f.today_sales) || 0;
+  const laborHours = parseFloat(f.labor_hours) || 0;
+  const appAmount = parseFloat(f.app_amount) || 0;
+  const appPercent = totalSales ? ((appAmount / totalSales) * 100).toFixed(1) : "0";
+
   const productivity = laborHours ? (totalSales / laborHours).toFixed(1) : "0";
 
   const report = `店名：${f.store_name}
@@ -131,7 +133,7 @@ ${f.productivity_note}
 
 Uber Eats：${f.ue_qty}筆/${f.ue_amount}元
 Food Panda：${f.fp_qty}筆/${f.fp_amount}元
-APP訂餐：${f.app_qty}筆/${f.app_amount}元（佔${f.app_percent}%）
+APP訂餐：${f.app_qty}筆/${f.app_amount}元（佔${appPercent}%）
 `;
 
   document.getElementById('output').textContent = report;
