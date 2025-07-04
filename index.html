@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>門市日報表 & 算錢工具</title>
+<title>門市日報表（新版格式）</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -55,7 +55,7 @@
   button:hover {
     background: #357ab8;
   }
-  pre, .result {
+  pre {
     background: #fff;
     padding: 15px;
     border: 1px solid #ccc;
@@ -64,180 +64,78 @@
     margin-top: 15px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
-  @media (max-width: 600px) {
-    body {
-      padding: 5px;
-    }
-    input {
-      font-size: 18px;
-    }
-    button {
-      font-size: 20px;
-    }
-  }
 </style>
 </head>
 <body>
 
-<h2>📋 門市日報表產生器（自動計算）</h2>
+<h2>📋 門市日報表（新版格式）</h2>
 <form id="reportForm">
   <label>店名：<input name="store_name" required></label>
   <label>日期：<input name="date"></label>
   <label>天氣：<input name="weather"></label>
   <label>今日營業額：<input name="today_sales" type="number" required></label>
   <label>今日來客數：<input name="today_customers" type="number" required></label>
+  <label>尖峰總營業額(平5-9)(假5-11)：<input name="peak_total"></label>
   <label>最高營業額時段：<input name="peak_time"></label>
   <label>最高營業額：<input name="peak_sales"></label>
   <label>值班經理：<input name="manager"></label>
-  <label>請假/遲到人員：<input name="leave_late"></label>
   <label>人力：<input name="labor_people"></label>
-  <label>總工時：<input name="labor_hours" type="number" required></label>
-  <label>計時時數：<input name="hourly_hours"></label>
+  <label>總工時：<input name="labor_hours" type="number"></label>
+  <label>人事成本：<input name="labor_cost"></label>
   <label>生產力說明：<input name="productivity_note"></label>
+  
+  <h3>新品</h3>
+  <label>法國站新品(份)：<input name="new_french"></label>
+  <label>新奶蓋飲品(杯)：<input name="new_milk"></label>
 
-  <h3>📦 各通路訂單資料</h3>
-  <label>Ue 單量：<input name="ue_qty" type="number"></label>
-  <label>Ue 金額：<input name="ue_amount" type="number"></label>
-  <label>FP 單量：<input name="fp_qty" type="number"></label>
-  <label>FP 金額：<input name="fp_amount" type="number"></label>
-  <label>App 單量：<input name="app_qty" type="number"></label>
-  <label>App 金額：<input name="app_amount" type="number"></label>
-  <label>桌邊 單量：<input name="table_qty" type="number"></label>
-  <label>桌邊 金額：<input name="table_amount" type="number"></label>
-
-  <h3>🥤 飲料資料</h3>
-  <label>咖啡杯數：<input name="coffee_qty" type="number" required></label>
-  <label>飲料杯數：<input name="drink_qty" type="number" required></label>
-
-  <label>三明治（銷/廢)：<input name="sandwich"></label>
-  <label>員工餐八折：<input name="staff_meal"></label>
-
-  <label>新品目標符號：<input name="new_product_goal" placeholder="🎯"></label>
-  <label>黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：<input name="item1"></label>
-  <label>蕈菇歐姆蛋吐司/焗烤厚片：<input name="item2"></label>
-  <label>蕈菇烤餅/嫩蛋捲：<input name="item3"></label>
-  <label>雲朵奶蓋紅茶/青茶/黑糖厚奶茶：<input name="item4"></label>
-  <label>鯊魚拿鐵：<input name="item5"></label>
-
-  <label>未存：<input name="end_inventory"></label>
-  <label>退單：<input name="returns"></label>
+  <h3>各平台訂單</h3>
+  <label>Uber Eats 筆數：<input name="ue_qty"></label>
+  <label>Uber Eats 金額：<input name="ue_amount"></label>
+  <label>Food Panda 筆數：<input name="fp_qty"></label>
+  <label>Food Panda 金額：<input name="fp_amount"></label>
+  <label>APP 訂餐 筆數：<input name="app_qty"></label>
+  <label>APP 訂餐 金額：<input name="app_amount"></label>
+  <label>APP 訂餐佔比%：<input name="app_percent"></label>
 
   <button type="button" onclick="generateReport()">✨ 產生日報表</button>
 </form>
+
 <pre id="output"></pre>
 
-<h2>💰 門市算錢工具（含8000底金檢核）</h2>
-<form id="moneyForm">
-  <h3>🔢 各面額張數</h3>
-  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
-  <label>500元張數：<input type="number" name="m500" value="0"></label>
-  <label>100元張數：<input type="number" name="m100" value="0"></label>
-  <label>50元張數：<input type="number" name="m50" value="0"></label>
-  <label>10元枚數：<input type="number" name="m10" value="0"></label>
-  <label>5元枚數：<input type="number" name="m5" value="0"></label>
-  <label>1元枚數：<input type="number" name="m1" value="0"></label>
-
-  <h3>💵 今日已收現金</h3>
-  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
-
-  <h3>📝 支出金額</h3>
-  <label>支出合計：<input type="number" name="expense" value="0"></label>
-
-  <button type="button" onclick="calculateMoney()">💡 計算金額</button>
-</form>
-<div class="result" id="moneyResult"></div>
-
 <script>
-function calcPercent(amount, total) {
-  if (!amount || !total || total === 0) return "0%";
-  return ((amount / total) * 100).toFixed(1) + "%";
-}
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
-  const totalSales = parseFloat(f.today_sales) || 0;
-  const customers = parseInt(f.today_customers) || 0;
+
   const laborHours = parseFloat(f.labor_hours) || 0;
-  const average = customers ? (totalSales / customers).toFixed(1) : "0";
+  const totalSales = parseFloat(f.today_sales) || 0;
   const productivity = laborHours ? (totalSales / laborHours).toFixed(1) : "0";
-  const uePercent = calcPercent(f.ue_amount, totalSales);
-  const fpPercent = calcPercent(f.fp_amount, totalSales);
-  const appPercent = calcPercent(f.app_amount, totalSales);
-  const tablePercent = calcPercent(f.table_amount, totalSales);
-  const coffeeQty = parseInt(f.coffee_qty) || 0;
-  const drinkQty = parseInt(f.drink_qty) || 0;
-  const totalDrinkForPercent = coffeeQty + drinkQty;
-  const coffeePercent = calcPercent(coffeeQty, totalDrinkForPercent);
+
   const report = `店名：${f.store_name}
 日期：${f.date}
 天氣：${f.weather}
-
-今日營業額：${totalSales}
-今日來客數：${customers}
-今日客單價：${average}
-最高營業額時段/營業額：${f.peak_time}/${f.peak_sales}
-
+今日營業額：${f.today_sales}
+今日來客數：${f.today_customers}
+尖峰總營業額(平5-9)(假5-11)：${f.peak_total}
+最高營業額/時段：${f.peak_sales}/${f.peak_time}
 值班經理：${f.manager}
-請假/遲到人員：${f.leave_late}
-人力/總工時：${f.labor_people}/${laborHours}
+當日請假人員：0
+當日遲到人員：0
+今日上班人力/工時：${f.labor_people}/${f.labor_hours}
 生產力：${productivity}
-計時時數：${f.hourly_hours}
+人事成本：${f.labor_cost}
 生產力說明：
 ${f.productivity_note}
 
-Ue單量/金額/佔比：${f.ue_qty}/${f.ue_amount}/${uePercent}
-FP 單量/金額/佔比：${f.fp_qty}/${f.fp_amount}/${fpPercent}
-App單量/金額/佔比：${f.app_qty}/${f.app_amount}/${appPercent}
-桌邊單量/金額/佔比：${f.table_qty}/${f.table_amount}/${tablePercent}
+法國站新品：${f.new_french}份
+新奶蓋飲品：${f.new_milk}杯
 
-咖啡杯數/總杯數/佔比：${coffeeQty}/${totalDrinkForPercent}/${coffeePercent}
-飲料總杯數：${drinkQty}
-三明治（銷/廢)：${f.sandwich}
-員工餐八折：${f.staff_meal}
+Uber Eats：${f.ue_qty}筆/${f.ue_amount}元
+Food Panda：${f.fp_qty}筆/${f.fp_amount}元
+APP訂餐：${f.app_qty}筆/${f.app_amount}元（佔${f.app_percent}%）
+`;
 
-新品戰報（目標：${f.new_product_goal})
-黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：${f.item1}
-蕈菇歐姆蛋吐司/焗烤厚片：${f.item2}
-蕈菇烤餅/嫩蛋捲：${f.item3}
-雲朵奶蓋紅茶/青茶/黑糖厚奶茶：${f.item4}
-鯊魚拿鐵：${f.item5}
-
-未存：${f.end_inventory}
-退單：${f.returns}`;
   document.getElementById('output').textContent = report;
-}
-function calculateMoney() {
-  const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
-  const total = 
-    (parseInt(f.m1000)||0)*1000 +
-    (parseInt(f.m500)||0)*500 +
-    (parseInt(f.m100)||0)*100 +
-    (parseInt(f.m50)||0)*50 +
-    (parseInt(f.m10)||0)*10 +
-    (parseInt(f.m5)||0)*5 +
-    (parseInt(f.m1)||0)*1;
-  const cashIn = parseInt(f.cash_in)||0;
-  const expenses = parseInt(f.expense)||0;
-  const final = total - cashIn - expenses;
-  const required = 8000;
-  const diff = final - required;
-  let status = "";
-  if (diff < 0) {
-    status = `<span style="color:red;"><strong>❌ 短少：${Math.abs(diff)} 元</strong></span>`;
-  } else {
-    status = `<span style="color:green;"><strong>✅ 足夠，超出：${diff} 元</strong></span>`;
-  }
-  document.getElementById('moneyResult').innerHTML = `
-    <strong>計算結果：</strong><br>
-    現金合計：${total} 元<br>
-    扣除現金收入：${cashIn} 元<br>
-    扣除支出：${expenses} 元<br>
-    最終金額：${final} 元<br>
-    應有底金：${required} 元<br>
-    ${status}
-  `;
 }
 </script>
 </body>
 </html>
-
-
