@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>門市日報表（APP佔比自動計算）</title>
+<title>門市日報表 & 算錢工具</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -55,7 +55,7 @@
   button:hover {
     background: #357ab8;
   }
-  pre {
+  pre, .result {
     background: #fff;
     padding: 15px;
     border: 1px solid #ccc;
@@ -63,6 +63,17 @@
     white-space: pre-wrap;
     margin-top: 15px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  @media (max-width: 600px) {
+    body {
+      padding: 5px;
+    }
+    input {
+      font-size: 18px;
+    }
+    button {
+      font-size: 20px;
+    }
   }
 </style>
 </head>
@@ -101,15 +112,34 @@
 
 <pre id="output"></pre>
 
+<h2>💰 門市算錢工具（含8000底金檢核）</h2>
+<form id="moneyForm">
+  <h3>🔢 各面額張數</h3>
+  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
+  <label>500元張數：<input type="number" name="m500" value="0"></label>
+  <label>100元張數：<input type="number" name="m100" value="0"></label>
+  <label>50元張數：<input type="number" name="m50" value="0"></label>
+  <label>10元枚數：<input type="number" name="m10" value="0"></label>
+  <label>5元枚數：<input type="number" name="m5" value="0"></label>
+  <label>1元枚數：<input type="number" name="m1" value="0"></label>
+
+  <h3>💵 今日已收現金</h3>
+  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
+
+  <h3>📝 支出金額</h3>
+  <label>支出合計：<input type="number" name="expense" value="0"></label>
+
+  <button type="button" onclick="calculateMoney()">💡 計算金額</button>
+</form>
+<div class="result" id="moneyResult"></div>
+
 <script>
 function generateReport() {
   const f = Object.fromEntries(new FormData(document.getElementById('reportForm')).entries());
-
   const totalSales = parseFloat(f.today_sales) || 0;
   const laborHours = parseFloat(f.labor_hours) || 0;
   const appAmount = parseFloat(f.app_amount) || 0;
   const appPercent = totalSales ? ((appAmount / totalSales) * 100).toFixed(1) : "0";
-
   const productivity = laborHours ? (totalSales / laborHours).toFixed(1) : "0";
 
   const report = `店名：${f.store_name}
@@ -137,6 +167,38 @@ APP訂餐：${f.app_qty}筆/${f.app_amount}元（佔${appPercent}%）
 `;
 
   document.getElementById('output').textContent = report;
+}
+
+function calculateMoney() {
+  const f = Object.fromEntries(new FormData(document.getElementById('moneyForm')).entries());
+  const total = 
+    (parseInt(f.m1000)||0)*1000 +
+    (parseInt(f.m500)||0)*500 +
+    (parseInt(f.m100)||0)*100 +
+    (parseInt(f.m50)||0)*50 +
+    (parseInt(f.m10)||0)*10 +
+    (parseInt(f.m5)||0)*5 +
+    (parseInt(f.m1)||0)*1;
+  const cashIn = parseInt(f.cash_in)||0;
+  const expenses = parseInt(f.expense)||0;
+  const final = total - cashIn - expenses;
+  const required = 8000;
+  const diff = final - required;
+  let status = "";
+  if (diff < 0) {
+    status = `<span style="color:red;"><strong>❌ 短少：${Math.abs(diff)} 元</strong></span>`;
+  } else {
+    status = `<span style="color:green;"><strong>✅ 足夠，超出：${diff} 元</strong></span>`;
+  }
+  document.getElementById('moneyResult').innerHTML = `
+    <strong>計算結果：</strong><br>
+    現金合計：${total} 元<br>
+    扣除現金收入：${cashIn} 元<br>
+    扣除支出：${expenses} 元<br>
+    最終金額：${final} 元<br>
+    應有底金：${required} 元<br>
+    ${status}
+  `;
 }
 </script>
 </body>
