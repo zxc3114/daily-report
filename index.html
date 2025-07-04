@@ -94,10 +94,14 @@
   <label>總工時：<input name="labor_hours" type="number"></label>
   <label>人事成本：<input name="labor_cost"></label>
   <label>生產力說明：<input name="productivity_note"></label>
-  
-  <h3>新品</h3>
-  <label>法國站新品(份)：<input name="new_french"></label>
-  <label>新奶蓋飲品(杯)：<input name="new_milk"></label>
+
+  <h3>新品戰報</h3>
+  <label>新品目標符號：<input name="new_product_goal" placeholder="🎯"></label>
+  <label>黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：<input name="item1"></label>
+  <label>蕈菇歐姆蛋吐司/焗烤厚片：<input name="item2"></label>
+  <label>蕈菇烤餅/嫩蛋捲：<input name="item3"></label>
+  <label>雲朵奶蓋紅茶/青茶/黑糖厚奶茶：<input name="item4"></label>
+  <label>鯊魚拿鐵：<input name="item5"></label>
 
   <h3>各平台訂單</h3>
   <label>Uber Eats 筆數：<input name="ue_qty"></label>
@@ -158,8 +162,12 @@ function generateReport() {
 生產力說明：
 ${f.productivity_note}
 
-法國站新品：${f.new_french}份
-新奶蓋飲品：${f.new_milk}杯
+新品戰報（目標：${f.new_product_goal})
+黑松露厚牛/菲力雞軟法/鮪魚歐姆蛋：${f.item1}
+蕈菇歐姆蛋吐司/焗烤厚片：${f.item2}
+蕈菇烤餅/嫩蛋捲：${f.item3}
+雲朵奶蓋紅茶/青茶/黑糖厚奶茶：${f.item4}
+鯊魚拿鐵：${f.item5}
 
 Uber Eats：${f.ue_qty}筆/${f.ue_amount}元
 Food Panda：${f.fp_qty}筆/${f.fp_amount}元
