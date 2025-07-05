@@ -111,6 +111,11 @@
   <label>APP 訂餐 筆數：<input name="app_qty"></label>
   <label>APP 訂餐 金額：<input name="app_amount"></label>
 
+  <h3>其他資料</h3>
+  <label>未存：<input name="not_saved"></label>
+  <label>退單：<input name="returns"></label>
+  <label>備註：<input name="note"></label>
+
   <button type="button" onclick="generateReport()">✨ 產生日報表</button>
 </form>
 
@@ -172,6 +177,10 @@ ${f.productivity_note}
 Uber Eats：${f.ue_qty}筆/${f.ue_amount}元
 Food Panda：${f.fp_qty}筆/${f.fp_amount}元
 APP訂餐：${f.app_qty}筆/${f.app_amount}元（佔${appPercent}%）
+
+未存：${f.not_saved}
+退單：${f.returns}
+備註：${f.note}
 `;
 
   document.getElementById('output').textContent = report;
