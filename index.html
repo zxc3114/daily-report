@@ -84,14 +84,14 @@
   <label>店名：<input name="store_name" required></label>
   <label>日期：<input name="date"></label>
   <label>天氣：<input name="weather"></label>
-  <label>今日營業額：<input name="today_sales" type="number" required></label>
-  <label>今日來客數：<input name="today_customers" type="number" required></label>
+  <label>今日營業額：<input name="today_sales" required></label>
+  <label>今日來客數：<input name="today_customers" required></label>
   <label>尖峰總營業額(平5-9)(假5-11)：<input name="peak_total"></label>
   <label>最高營業額時段：<input name="peak_time"></label>
   <label>最高營業額：<input name="peak_sales"></label>
   <label>值班經理：<input name="manager"></label>
   <label>人力：<input name="labor_people"></label>
-  <label>總工時：<input name="labor_hours" type="number"></label>
+  <label>總工時：<input name="labor_hours"></label>
   <label>人事成本：<input name="labor_cost"></label>
   <label>生產力說明：<input name="productivity_note"></label>
 
@@ -119,19 +119,19 @@
 <h2>💰 門市算錢工具（含8000底金檢核）</h2>
 <form id="moneyForm">
   <h3>🔢 各面額張數</h3>
-  <label>1000元張數：<input type="number" name="m1000" value="0"></label>
-  <label>500元張數：<input type="number" name="m500" value="0"></label>
-  <label>100元張數：<input type="number" name="m100" value="0"></label>
-  <label>50元張數：<input type="number" name="m50" value="0"></label>
-  <label>10元枚數：<input type="number" name="m10" value="0"></label>
-  <label>5元枚數：<input type="number" name="m5" value="0"></label>
-  <label>1元枚數：<input type="number" name="m1" value="0"></label>
+  <label>1000元張數：<input name="m1000" value="0"></label>
+  <label>500元張數：<input name="m500" value="0"></label>
+  <label>100元張數：<input name="m100" value="0"></label>
+  <label>50元張數：<input name="m50" value="0"></label>
+  <label>10元枚數：<input name="m10" value="0"></label>
+  <label>5元枚數：<input name="m5" value="0"></label>
+  <label>1元枚數：<input name="m1" value="0"></label>
 
   <h3>💵 今日已收現金</h3>
-  <label>現金收入：<input type="number" name="cash_in" value="0"></label>
+  <label>現金收入：<input name="cash_in" value="0"></label>
 
   <h3>📝 支出金額</h3>
-  <label>支出合計：<input type="number" name="expense" value="0"></label>
+  <label>支出合計：<input name="expense" value="0"></label>
 
   <button type="button" onclick="calculateMoney()">💡 計算金額</button>
 </form>
@@ -187,8 +187,8 @@ function calculateMoney() {
     (parseInt(f.m10)||0)*10 +
     (parseInt(f.m5)||0)*5 +
     (parseInt(f.m1)||0)*1;
-  const cashIn = parseInt(f.cash_in)||0;
-  const expenses = parseInt(f.expense)||0;
+  const cashIn = parseFloat(f.cash_in) || 0;
+  const expenses = parseFloat(f.expense) || 0;
   const final = total - cashIn - expenses;
   const required = 8000;
   const diff = final - required;
